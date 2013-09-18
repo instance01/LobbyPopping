@@ -1,0 +1,8 @@
+name: LobbyPopping
+main: com.comze_instancelabs.lobbypopping.Main
+version: 1.0
+author: instancelabs
+commands:
+   anim:
+      description: Deactivate a plugin
+      usage: /anim [name]
