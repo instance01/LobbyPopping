@@ -9,9 +9,11 @@ import org.bukkit.craftbukkit.v1_6_R2.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
+//modified by instancelabs
+
 public enum ParticleEffectNew {
 	/**
-	 * Each ParticleEffect has the packet name, and the environment in witch it will be succesfully displayed.
+	 * Each ParticleEffect has the packet name, and the environment in which it will be successfully displayed.
 	 */
     HUGE_EXPLOSION("hugeexplosion", Environment.ANY), //works in any block type
     LARGE_EXPLODE("largeexplode", Environment.ANY),
@@ -44,9 +46,9 @@ public enum ParticleEffectNew {
     ANGRY_VILLAGER("angryVillager", Environment.ANY),
     HAPPY_VILLAGER("happerVillager", Environment.ANY),
 //	  ICONCRACK is not reliable and should not be added to the API, across different sized texture packs it displays a different item)
-//    ICONCRACK("iconcrack_%id%", Environment.UKNOWN), 		//Guessing it is any, but didnt test
-    TILECRACK("tilecrack_%id%_%data%", Environment.UKNOWN), //Guessing it is any, but didnt test
-    SPLASH("splash", Environment.AIR), 					//ony works in air
+//    ICONCRACK("iconcrack_%id%", Environment.UKNOWN), 		//Guessing it is any, but didn't test
+    TILECRACK("tilecrack_%id%_%data%", Environment.UKNOWN), //Guessing it is any, but didn't test
+    SPLASH("splash", Environment.AIR), 					//only works in air
    	BUBBLE("bubble", Environment.IN_WATER), 			//only works in water
 	SUSPEND("suspend", Environment.UKNOWN), 			//Can't figure out what this does
 	DEPTH_SUSPEND("depthSuspend", Environment.UKNOWN); 	//Can't figure out what this does
@@ -59,7 +61,7 @@ public enum ParticleEffectNew {
     private int _data = 0;
     
     /**
-     * Each particle effect has a packet name, and an enirment for developers
+     * Each particle effect has a packet name, and an environment for developers
      * @param packetName
      * @param environment
      */
@@ -115,6 +117,26 @@ public enum ParticleEffectNew {
 		}
     }
     
+    //added
+    /**
+     * This is used to send a particle effect to only one player at a given location, no one else will see this.
+     * @param player
+     * @param count
+     * @param speed
+     */
+    public void animateToPlayer (Player player, Location loc,  int count, float speed) {
+    	if(player == null)
+    		return;
+    	
+    	CraftPlayer craftPlayer = (CraftPlayer) player;
+    	
+    	try {
+			craftPlayer.getHandle().playerConnection.sendPacket(getParticle(loc, xStack, yStack, zStack, speed, count));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+    }
+    
     /**
      * This is used to send a particle effect to a location and all players near it will see it
      * @param location
@@ -148,7 +170,7 @@ public enum ParticleEffectNew {
     }
     
     /**
-     * Enum that dipicts in what envirnments a particle effect will be seen
+     * Enum that depicts in what environments a particle effect will be seen
      */
     public enum Environment {
     	ANY,

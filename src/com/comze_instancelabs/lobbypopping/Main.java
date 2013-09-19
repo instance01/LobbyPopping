@@ -3,6 +3,7 @@ package com.comze_instancelabs.lobbypopping;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.EntityEffect;
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Boat;
@@ -30,40 +31,46 @@ public class Main extends JavaPlugin implements Listener {
 	
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args){
+		// just for testing purposes
     	if(cmd.getName().equalsIgnoreCase("anim")){
     		Player p = (Player)sender;
     		ParticleEffectNew heart = ParticleEffectNew.HEART;
 			ParticleEffectNew smoke = ParticleEffectNew.SMOKE;
-			ParticleEffectNew mob = ParticleEffectNew.MOB_SPELL;
 			ParticleEffectNew explode = ParticleEffectNew.EXPLODE;
-			heart.animateToPlayer(p, 100, 1);
-			smoke.animateToPlayer(p, 100, 1);
-			mob.animateToPlayer(p, 100, 1);
-			explode.animateToPlayer(p, 100, 1);
+			heart.animateToPlayer(p, new Location(p.getLocation().getWorld(), p.getLocation().getX(), p.getLocation().getY() + 1, p.getLocation().getZ()), 200, 1);
+			heart.animateToPlayer(p, 200, 1);
+			smoke.animateToPlayer(p, p.getLocation(), 200, 1);
+			explode.animateToPlayer(p, p.getLocation(), 200, 1);
+			p.playEffect(p.getLocation(), Effect.MOBSPAWNER_FLAMES, 100);
     		return true;
     	}
     	return false;
 	}
 	
+	
+	// only works in survival mode
 	@EventHandler
-	public void onTag(EntityDamageByEntityEvent e) {
+	public void onClickEntity(EntityDamageByEntityEvent e) {
 		if(e.getEntity() instanceof Player && e.getDamager() instanceof Player){
 			final Player attacked = (Player) e.getEntity();
 			final Player attacker = (Player) e.getDamager();
 			if(attacker.hasPermission("lobbypopping.pop")){
+				
+				// effects:
+				// 2 hearts, 1 smoke, 1 explode, 1 mobspawner_flames
+				
+				//ParticleEffectNew heart = ParticleEffectNew.HAPPY_VILLAGER;
 				ParticleEffectNew heart = ParticleEffectNew.HEART;
 				ParticleEffectNew smoke = ParticleEffectNew.SMOKE;
 				ParticleEffectNew explode = ParticleEffectNew.EXPLODE;
-				heart.animateAtLocation(attacked.getLocation(), 200, 1);
-				heart.animateAtLocation(attacked.getLocation(), 200, 1);
-				heart.animateAtLocation(attacked.getLocation(), 200, 1);
-				heart.animateAtLocation(attacked.getLocation(), 200, 1);
-				smoke.animateAtLocation(attacked.getLocation(), 200, 1);
-				//mob.animateAtLocation(attacked.getLocation(), 200, 1);
-				explode.animateAtLocation(attacked.getLocation(), 200, 1);
+				heart.animateToPlayer(attacker, attacked.getLocation(), 200, 1);
+				heart.animateToPlayer(attacker, new Location(attacked.getLocation().getWorld(), attacked.getLocation().getX(), attacked.getLocation().getY() + 1, attacked.getLocation().getZ()), 200, 1);
+				smoke.animateToPlayer(attacker, attacked.getLocation(), 200, 1);
+				explode.animateToPlayer(attacker, attacked.getLocation(), 200, 1);
+				
 				attacker.playEffect(attacked.getLocation(), Effect.MOBSPAWNER_FLAMES, 100);
 				//attacker.playEffect(attacked.getLocation(), (Effect)EntityEffect.WOLF_HEARTS, 100);
-				attacker.playEffect(EntityEffect.WOLF_HEARTS);
+				//attacker.playEffect(EntityEffect.WOLF_HEARTS);
 				
 				//heart.animateToPlayer(attacker, 200, 1);
 				//smoke.animateToPlayer(attacker, 200, 1);
@@ -76,7 +83,7 @@ public class Main extends JavaPlugin implements Listener {
 						attacker.showPlayer(attacked);
 						attacked.showPlayer(attacker);
 					}
-				}, 600);
+				}, 600); // show players again after 30 seconds (30x20)
 				e.setCancelled(true);
 			}
 		}
