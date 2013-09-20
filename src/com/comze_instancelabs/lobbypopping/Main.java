@@ -34,8 +34,11 @@ public class Main extends JavaPlugin implements Listener {
 	public void onEnable(){
 		getServer().getPluginManager().registerEvents(this, this);
 		
-		/*getConfig().options().copyDefaults(true);
-		this.saveConfig();*/
+		getConfig().addDefault("config.hide_duration", 5); // time to wait to show a player again
+		getConfig().addDefault("config.lobbypopping_region", "poppinglobby"); // the region in which lobbypopping should be enabled
+		
+		getConfig().options().copyDefaults(true);
+		this.saveConfig();
 	}
 	
 	
@@ -79,7 +82,7 @@ public class Main extends JavaPlugin implements Listener {
 				ApplicableRegionSet set = WGBukkit.getRegionManager(attacker.getWorld()).getApplicableRegions(attacker.getLocation());
 
         		for (ProtectedRegion region : set) {
-        			if(region.getId().equalsIgnoreCase("poppinglobby") && ProtectedRegion.isValidId(region.getId())){
+        			if(region.getId().equalsIgnoreCase(getConfig().getString("lobbypopping_region")) && ProtectedRegion.isValidId(region.getId())){
 		        		attacker.sendMessage("§3You just popped " + attacked.getName() + "!");
 						// effects:
 						// 2 hearts, 1 smoke, 1 explode, 1 mobspawner_flames
@@ -96,11 +99,7 @@ public class Main extends JavaPlugin implements Listener {
 						attacker.playEffect(attacked.getLocation(), Effect.MOBSPAWNER_FLAMES, 100);
 						//attacker.playEffect(attacked.getLocation(), (Effect)EntityEffect.WOLF_HEARTS, 100);
 						//attacker.playEffect(EntityEffect.WOLF_HEARTS);
-						
-						//heart.animateToPlayer(attacker, 200, 1);
-						//smoke.animateToPlayer(attacker, 200, 1);
-						//mob.animateToPlayer(attacker, 200, 1);
-						//explode.animateToPlayer(attacker, 200, 1);
+
 						attacker.hidePlayer(attacked);
 						
 						Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
@@ -108,7 +107,7 @@ public class Main extends JavaPlugin implements Listener {
 								attacker.showPlayer(attacked);
 								attacked.showPlayer(attacker);
 							}
-						}, 100); // show players again after 5 seconds (10x20)
+						}, getConfig().getInt("config.hide_duration")); // show players again after 5 seconds (10x20)
 						e.setCancelled(true);		
         			}
         		}
