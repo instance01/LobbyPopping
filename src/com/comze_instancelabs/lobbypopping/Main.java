@@ -34,7 +34,7 @@ public class Main extends JavaPlugin implements Listener {
 	public void onEnable(){
 		getServer().getPluginManager().registerEvents(this, this);
 		
-		getConfig().addDefault("config.hide_duration", 5); // time to wait to show a player again
+		getConfig().addDefault("config.hide_duration", 200); // time to wait to show a player again
 		getConfig().addDefault("config.lobbypopping_region", "poppinglobby"); // the region in which lobbypopping should be enabled
 		
 		getConfig().options().copyDefaults(true);
@@ -78,15 +78,13 @@ public class Main extends JavaPlugin implements Listener {
 			final Player attacked = (Player) e.getEntity();
 			final Player attacker = (Player) e.getDamager();
 			if(attacker.hasPermission("lobbypopping.pop")){
-				
 				ApplicableRegionSet set = WGBukkit.getRegionManager(attacker.getWorld()).getApplicableRegions(attacker.getLocation());
 
         		for (ProtectedRegion region : set) {
-        			if(region.getId().equalsIgnoreCase(getConfig().getString("lobbypopping_region")) && ProtectedRegion.isValidId(region.getId())){
+        			if(region.getId().equalsIgnoreCase(getConfig().getString("config.lobbypopping_region")) && ProtectedRegion.isValidId(region.getId())){
 		        		attacker.sendMessage("§3You just popped " + attacked.getName() + "!");
 						// effects:
 						// 2 hearts, 1 smoke, 1 explode, 1 mobspawner_flames
-						
 						//ParticleEffectNew heart = ParticleEffectNew.HAPPY_VILLAGER;
 						ParticleEffectNew heart = ParticleEffectNew.HEART;
 						ParticleEffectNew smoke = ParticleEffectNew.SMOKE;
