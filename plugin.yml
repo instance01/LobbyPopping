@@ -6,3 +6,6 @@ commands:
    anim:
       description: Try the particle effects on your own character
       usage: /anim [name]
+   pop:
+      description: the pop command
+      usage: /pop [name]
