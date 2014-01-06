@@ -14,6 +14,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scoreboard.DisplaySlot;
+import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.ScoreboardManager;
 
 import com.sk89q.worldguard.bukkit.WGBukkit;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
@@ -22,6 +26,8 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 public class Main extends JavaPlugin implements Listener {
 
+	HashMap<Player, Integer> scores = new HashMap<Player, Integer>();
+	
 	WorldGuardPlugin worldGuard = (WorldGuardPlugin) getWorldGuard();
 	public Plugin getWorldGuard(){
     	return Bukkit.getPluginManager().getPlugin("WorldGuard");
@@ -116,7 +122,13 @@ public class Main extends JavaPlugin implements Listener {
         					e.setCancelled(true);
         					attacker.hidePlayer(attacked);
 	        				attacker.sendMessage("§3You just popped " + attacked.getName() + "!");
-							// effects:
+							if(scores.containsKey(attacker)){
+								scores.put(attacker, scores.get(attacker) + 1);
+							}else{
+								scores.put(attacker, 1);
+							}
+							updateScoreboard(attacker, scores.get(attacker));
+	        				// effects:
 							// 2 hearts, 1 smoke, 1 explode, 1 mobspawner_flames
 							//ParticleEffectNew heart = ParticleEffectNew.HAPPY_VILLAGER;
 							ParticleEffectNew heart = ParticleEffectNew.HEART;
@@ -147,5 +159,19 @@ public class Main extends JavaPlugin implements Listener {
 		}
 	}
 	
+	
+	
+	public void updateScoreboard(Player p, int score){
+		ScoreboardManager manager = Bukkit.getScoreboardManager();
+    	Scoreboard board = manager.getNewScoreboard();
+    	
+    	Objective objective = board.registerNewObjective("test", "dummy");
+        objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+        objective.setDisplayName("§l§7DrakonnasPopping!");
+        objective.getScore(Bukkit.getOfflinePlayer("§9PLAYERSP OPPED")).setScore(score);
+
+        p.setScoreboard(board);
+	}
+
 	
 }
