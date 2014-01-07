@@ -127,7 +127,7 @@ public class Main extends JavaPlugin implements Listener {
 							}else{
 								scores.put(attacker, 1);
 							}
-							updateScoreboard(attacker, scores.get(attacker));
+							updateScoreboard();
 	        				// effects:
 							// 2 hearts, 1 smoke, 1 explode, 1 mobspawner_flames
 							//ParticleEffectNew heart = ParticleEffectNew.HAPPY_VILLAGER;
@@ -160,17 +160,36 @@ public class Main extends JavaPlugin implements Listener {
 	}
 	
 	
-	
-	public void updateScoreboard(Player p, int score){
+	public void updateScoreboard(){
 		ScoreboardManager manager = Bukkit.getScoreboardManager();
     	Scoreboard board = manager.getNewScoreboard();
     	
     	Objective objective = board.registerNewObjective("test", "dummy");
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
         objective.setDisplayName("§l§7DrakonnasPopping!");
-        objective.getScore(Bukkit.getOfflinePlayer("§9PLAYERSP OPPED")).setScore(score);
-
-        p.setScoreboard(board);
+        boolean won = false;
+        for(Player p_ : scores.keySet()){
+        	if(scores.get(p_) > 19){
+        		p_.sendMessage("§aYou won this round!");
+        		getServer().broadcastMessage("§a" + p_.getName() + " just won this lobbypopping round!");
+        		won = true;
+        	}
+        	if(p_.isOnline()){
+        		objective.getScore(p_).setScore(scores.get(p_));
+        	}
+        }
+        
+        if(won){
+        	objective.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
+        	scores.clear();
+        }
+        
+        
+        for(Player p_ : scores.keySet()){
+        	if(p_.isOnline()){
+        		p_.setScoreboard(board);
+        	}
+        }
 	}
 
 	
